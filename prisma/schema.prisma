@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -7,4 +6,329 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["coicit"]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model abono {
+  id_abono    BigInt         @id @default(autoincrement())
+  id_persona  BigInt
+  fecha_abono DateTime       @default(dbgenerated("CURRENT_DATE")) @db.Date
+  hora_abono  DateTime       @default(dbgenerated("CURRENT_TIME")) @db.Time(6)
+  monto       Decimal        @db.Decimal(12, 2)
+  tipo_pago   tipo_pago_enum
+  persona     persona        @relation(fields: [id_persona], references: [id_persona])
+
+  @@index([id_persona], map: "idx_abono_persona")
+  @@schema("coicit")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model actividad {
+  id_actividad                BigInt                @id @default(autoincrement())
+  id_tipo_actividad           BigInt
+  id_espacio                  BigInt
+  id_expositor                BigInt?
+  id_unidad                   BigInt
+  codigo_matricula            String                @unique
+  descripcion_actividad       String
+  fecha_inicio                DateTime              @db.Date
+  fecha_final                 DateTime              @db.Date
+  hora_inicio                 DateTime              @db.Time(6)
+  hora_final                  DateTime              @db.Time(6)
+  capacidad_personas          Int
+  precio_actividad_individual Decimal               @db.Decimal(12, 2)
+  estado                      estado_actividad_enum @default(disponible)
+  espacio                     espacio               @relation(fields: [id_espacio], references: [id_espacio])
+  expositor                   expositor?            @relation(fields: [id_expositor], references: [id_expositor])
+  tipo_actividad              tipo_actividad        @relation(fields: [id_tipo_actividad], references: [id_tipo_actividad])
+  unidad                      unidad                @relation(fields: [id_unidad], references: [id_unidad])
+  inscripciones               inscripciones[]
+
+  @@index([id_espacio], map: "idx_actividad_espacio")
+  @@index([id_tipo_actividad], map: "idx_actividad_tipo")
+  @@index([id_unidad], map: "idx_actividad_unidad")
+  @@schema("coicit")
+}
+
+model administrativo {
+  id_administrativo   BigInt  @id @default(autoincrement())
+  id_persona          BigInt  @unique
+  descripcion_oficina String?
+  persona             persona @relation(fields: [id_persona], references: [id_persona])
+
+  @@index([id_persona], map: "idx_admin_persona")
+  @@schema("coicit")
+}
+
+model detalle_estructura_paquete {
+  id_detalle_estructura_paquete BigInt         @id @default(autoincrement())
+  id_paquete                    BigInt
+  id_tipo_actividad             BigInt
+  paquetes                      paquetes       @relation(fields: [id_paquete], references: [id_paquete], onDelete: Cascade)
+  tipo_actividad                tipo_actividad @relation(fields: [id_tipo_actividad], references: [id_tipo_actividad])
+
+  @@unique([id_paquete, id_tipo_actividad])
+  @@index([id_paquete], map: "idx_detalle_paquete")
+  @@index([id_tipo_actividad], map: "idx_detalle_tipo_act")
+  @@schema("coicit")
+}
+
+model docentes {
+  id_docente   BigInt            @id @default(autoincrement())
+  id_persona   BigInt            @unique
+  id_unidad    BigInt
+  tipo_docente tipo_docente_enum
+  persona      persona           @relation(fields: [id_persona], references: [id_persona])
+  unidad       unidad            @relation(fields: [id_unidad], references: [id_unidad])
+
+  @@index([id_persona], map: "idx_docentes_persona")
+  @@index([id_unidad], map: "idx_docentes_unidad")
+  @@schema("coicit")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model espacio {
+  id_espacio          BigInt      @id @default(autoincrement())
+  descripcion_espacio String      @unique
+  capacidad_espacio   Int
+  ubicacion           String?
+  actividad           actividad[]
+
+  @@schema("coicit")
+}
+
+model estudiantes {
+  id_estudiante BigInt                 @id @default(autoincrement())
+  id_persona    BigInt                 @unique
+  id_unidad     BigInt
+  status        status_estudiante_enum
+  persona       persona                @relation(fields: [id_persona], references: [id_persona])
+  unidad        unidad                 @relation(fields: [id_unidad], references: [id_unidad])
+
+  @@index([id_persona], map: "idx_estudiantes_persona")
+  @@index([id_unidad], map: "idx_estudiantes_unidad")
+  @@schema("coicit")
+}
+
+model expositor {
+  id_expositor    BigInt      @id @default(autoincrement())
+  id_persona      BigInt      @unique
+  especialidad    String?
+  procedencia     String?
+  org_procedencia String?
+  actividad       actividad[]
+  persona         persona     @relation(fields: [id_persona], references: [id_persona])
+
+  @@index([id_persona], map: "idx_expositor_persona")
+  @@schema("coicit")
+}
+
+model inscripciones {
+  id_inscripcion    BigInt    @id @default(autoincrement())
+  id_paquete        BigInt
+  id_actividad      BigInt
+  id_persona        BigInt
+  id_usuario        BigInt
+  hora_inscripcion  DateTime  @default(dbgenerated("CURRENT_TIME")) @db.Time(6)
+  fecha_inscripcion DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Date
+  observacion       String?
+  actividad         actividad @relation(fields: [id_actividad], references: [id_actividad])
+  paquetes          paquetes  @relation(fields: [id_paquete], references: [id_paquete])
+  persona           persona   @relation(fields: [id_persona], references: [id_persona])
+  usuarios          usuarios  @relation(fields: [id_usuario], references: [id_usuario])
+
+  @@unique([id_persona, id_actividad])
+  @@index([id_actividad], map: "idx_insc_actividad")
+  @@index([id_paquete], map: "idx_insc_paquete")
+  @@index([id_persona], map: "idx_insc_persona")
+  @@index([id_usuario], map: "idx_insc_usuario")
+  @@schema("coicit")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model paquete_limites {
+  id_paquete        BigInt
+  id_tipo_actividad BigInt
+  max_por_persona   Int
+  paquetes          paquetes       @relation(fields: [id_paquete], references: [id_paquete], onDelete: Cascade)
+  tipo_actividad    tipo_actividad @relation(fields: [id_tipo_actividad], references: [id_tipo_actividad])
+
+  @@id([id_paquete, id_tipo_actividad])
+  @@schema("coicit")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model paquete_tarifa {
+  id_paquete     BigInt
+  segmento       segmento_precio_enum
+  costo          Decimal              @db.Decimal(12, 2)
+  vigencia_desde DateTime             @default(dbgenerated("CURRENT_DATE")) @db.Date
+  paquetes       paquetes             @relation(fields: [id_paquete], references: [id_paquete], onDelete: Cascade)
+
+  @@id([id_paquete, segmento, vigencia_desde])
+  @@schema("coicit")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model paquetes {
+  id_paquete                 BigInt                       @id @default(autoincrement())
+  descripcion_paquete        String                       @unique
+  costo_paquete              Decimal                      @db.Decimal(12, 2)
+  observacion                String?
+  detalle_estructura_paquete detalle_estructura_paquete[]
+  inscripciones              inscripciones[]
+  paquete_limites            paquete_limites[]
+  paquete_tarifa             paquete_tarifa[]
+
+  @@schema("coicit")
+}
+
+model participante_externo {
+  id_externo        BigInt                         @id @default(autoincrement())
+  id_persona        BigInt                         @unique
+  tipo_participante tipo_participante_externo_enum
+  persona           persona                        @relation(fields: [id_persona], references: [id_persona])
+
+  @@index([id_persona], map: "idx_externo_persona")
+  @@schema("coicit")
+}
+
+model persona {
+  id_persona           BigInt                @id @default(autoincrement())
+  cedula               String                @unique
+  primer_nombre        String
+  segundo_nombre       String?
+  primer_apellido      String
+  segundo_apellido     String?
+  correo               String?               @unique @db.Citext
+  telefono             String?
+  tipo_persona         tipo_persona_enum
+  created_at           DateTime              @default(now()) @db.Timestamptz(6)
+  abono                abono[]
+  administrativo       administrativo?
+  docentes             docentes?
+  estudiantes          estudiantes?
+  expositor            expositor?
+  inscripciones        inscripciones[]
+  participante_externo participante_externo?
+  saldo                saldo?
+  usuarios             usuarios?
+
+  @@schema("coicit")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model saldo {
+  id_saldo            BigInt   @id @default(autoincrement())
+  id_persona          BigInt   @unique
+  monto               Decimal  @default(0) @db.Decimal(12, 2)
+  fecha_actualizacion DateTime @default(dbgenerated("CURRENT_DATE")) @db.Date
+  hora_actualizacion  DateTime @default(dbgenerated("CURRENT_TIME")) @db.Time(6)
+  persona             persona  @relation(fields: [id_persona], references: [id_persona])
+
+  @@index([id_persona], map: "idx_saldo_persona")
+  @@schema("coicit")
+}
+
+model tipo_actividad {
+  id_tipo_actividad          BigInt                       @id @default(autoincrement())
+  descripcion_tipo_actividad String                       @unique
+  actividad                  actividad[]
+  detalle_estructura_paquete detalle_estructura_paquete[]
+  paquete_limites            paquete_limites[]
+
+  @@schema("coicit")
+}
+
+model unidad {
+  id_unidad          BigInt        @id @default(autoincrement())
+  descripcion_unidad String        @unique
+  actividad          actividad[]
+  docentes           docentes[]
+  estudiantes        estudiantes[]
+
+  @@schema("coicit")
+}
+
+model usuarios {
+  id_usuario         BigInt           @id @default(autoincrement())
+  id_persona         BigInt           @unique
+  apodo_usuario      String           @unique
+  contrasena_usuario String
+  rol                rol_usuario_enum
+  created_at         DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime         @default(now()) @db.Timestamptz(6)
+  inscripciones      inscripciones[]
+  persona            persona          @relation(fields: [id_persona], references: [id_persona])
+
+  @@index([id_persona], map: "idx_usuarios_persona")
+  @@schema("coicit")
+}
+
+enum estado_actividad_enum {
+  disponible
+  cerrada
+  cancelada
+
+  @@schema("coicit")
+}
+
+enum rol_usuario_enum {
+  super_admin
+  admin
+  captador
+
+  @@schema("coicit")
+}
+
+enum segmento_precio_enum {
+  estudiante_activo
+  estudiante_egresado
+  docente_tc
+  docente_tp
+  administrativo
+  externo
+
+  @@schema("coicit")
+}
+
+enum status_estudiante_enum {
+  activo
+  egresado
+
+  @@schema("coicit")
+}
+
+enum tipo_docente_enum {
+  tiempo_completo
+  tiempo_parcial
+
+  @@schema("coicit")
+}
+
+enum tipo_pago_enum {
+  efectivo
+  transferencia
+  yappy
+
+  @@schema("coicit")
+}
+
+enum tipo_participante_externo_enum {
+  profesional
+  laborando
+  estudiante_externo
+  libre
+
+  @@schema("coicit")
+}
+
+enum tipo_persona_enum {
+  estudiante
+  docente
+  administrativo
+  externo
+
+  @@schema("coicit")
 }
