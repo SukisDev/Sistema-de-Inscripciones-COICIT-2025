@@ -39,6 +39,7 @@ async function testConnection() {
     });
     
     console.log('\n🏫 Facultades registradas:');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     unidades.forEach((u: any) => console.log(`- ${u.descripcion_unidad}`));
 
     const paquetes = await prisma.paquetes.findMany({
@@ -49,6 +50,7 @@ async function testConnection() {
     });
     
     console.log('\n📦 Paquetes disponibles:');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     paquetes.forEach((p: any) => console.log(`- ${p.descripcion_paquete}: $${p.costo_paquete}`));
 
     const espacios = await prisma.espacio.findMany({
@@ -62,6 +64,7 @@ async function testConnection() {
     });
     
     console.log('\n🏢 Espacios con mayor capacidad:');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     espacios.forEach((e: any) => console.log(`- ${e.descripcion_espacio}: ${e.capacidad_espacio} personas (${e.ubicacion})`));
 
     console.log('\n🎯 ¡Base de datos lista para el COICIT!');

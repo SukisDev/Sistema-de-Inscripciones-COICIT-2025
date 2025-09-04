@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "import:events": "npx tsx scripts/import-events.ts",
+    "test:connection": "npx tsx scripts/test-connection.ts",
+    "crear:personas": "npx tsx scripts/crear-personas-prueba.ts",
+    "probar:sistema": "npx tsx scripts/probar-sistema.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",

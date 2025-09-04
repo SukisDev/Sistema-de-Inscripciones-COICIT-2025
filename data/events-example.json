@@ -1,0 +1,46 @@
+[
+  {
+    "code": "COI-001",
+    "title": "Inteligencia Artificial en la Educación",
+    "speaker": "Dr. Juan Pérez (Universidad de Panamá)",
+    "date": "15/10",
+    "time": "8:00 - 9:30",
+    "location": "Sala Conferencias",
+    "faculty": "Facultad de Ingeniería de Sistemas Computacionales",
+    "type": "ponencia",
+    "status": "disponible"
+  },
+  {
+    "code": "COI-002",
+    "title": "Robótica Industrial Avanzada",
+    "speaker": "Ing. María González",
+    "date": "15/10",
+    "time": "10:00 - 11:30",
+    "location": "Lab FIM 4.0",
+    "faculty": "Facultad de Ingeniería Mecánica",
+    "type": "sesion_interactiva",
+    "status": "disponible"
+  },
+  {
+    "code": "COI-003",
+    "title": "Ciberseguridad en el Siglo XXI",
+    "speaker": "Dr. Carlos Rivera (SENACYT)",
+    "date": "16/10",
+    "time": "14:00 - 15:30",
+    "location": "Salón Galo Chang",
+    "faculty": "Facultad de Ingeniería de Sistemas Computacionales",
+    "type": "sesion_experto",
+    "status": "disponible"
+  },
+  {
+    "code": "COI-004",
+    "title": "Tour por Laboratorios de Innovación",
+    "speaker": "",
+    "date": "17/10",
+    "time": "9:00 - 10:30",
+    "location": "PROINTEC 1",
+    "faculty": "Facultad de Ciencias y Tecnología",
+    "type": "tour",
+    "status": "disponible"
+  }
+]

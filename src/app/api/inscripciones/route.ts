@@ -83,9 +83,9 @@ export async function POST(request: NextRequest) {
               unidad: true
             }
           },
-          paquete: true,
+          paquetes: true,
           persona: true,
-          usuario: {
+          usuarios: {
             include: {
               persona: true
             }
@@ -108,15 +108,15 @@ export async function POST(request: NextRequest) {
             hora_final: nuevaInscripcion.actividad.hora_final
           },
           paquete: {
-            nombre: nuevaInscripcion.paquete.descripcion_paquete
+            nombre: nuevaInscripcion.paquetes.descripcion_paquete
           },
           persona: {
             nombre: `${nuevaInscripcion.persona.primer_nombre} ${nuevaInscripcion.persona.primer_apellido}`,
             cedula: nuevaInscripcion.persona.cedula
           },
           usuario_registro: {
-            apodo: nuevaInscripcion.usuario.apodo_usuario,
-            nombre: `${nuevaInscripcion.usuario.persona.primer_nombre} ${nuevaInscripcion.usuario.persona.primer_apellido}`
+            apodo: nuevaInscripcion.usuarios.apodo_usuario,
+            nombre: `${nuevaInscripcion.usuarios.persona.primer_nombre} ${nuevaInscripcion.usuarios.persona.primer_apellido}`
           },
           fecha_inscripcion: nuevaInscripcion.fecha_inscripcion,
           hora_inscripcion: nuevaInscripcion.hora_inscripcion,

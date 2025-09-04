@@ -87,7 +87,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: paquetesConTarifas,
+      data: JSON.parse(JSON.stringify(paquetesConTarifas, (key, value) => 
+        typeof value === 'bigint' ? Number(value) : value
+      )),
       segmento_info: segmentoInfo,
       fecha_consulta: fecha
     });

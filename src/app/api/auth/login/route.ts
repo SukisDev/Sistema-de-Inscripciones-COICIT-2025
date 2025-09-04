@@ -5,8 +5,8 @@ import { z } from 'zod';
 
 // Schema de validación para login
 const loginSchema = z.object({
-  apodo_usuario: z.string().min(1, 'El usuario es requerido'),
-  contrasena: z.string().min(1, 'La contraseña es requerida')
+  usuario: z.string().min(1, 'El usuario es requerido'),
+  password: z.string().min(1, 'La contraseña es requerida')
 });
 
 export async function POST(request: NextRequest) {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     // Buscar usuario
     const usuario = await prisma.usuarios.findUnique({
       where: {
-        apodo_usuario: validatedData.apodo_usuario
+        apodo_usuario: validatedData.usuario
       },
       include: {
         persona: true
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar contraseña
     const passwordValid = await bcrypt.compare(
-      validatedData.contrasena, 
+      validatedData.password, 
       usuario.contrasena_usuario
     );
 
@@ -50,11 +50,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        id_usuario: usuario.id_usuario,
+        id_usuario: usuario.id_usuario.toString(),
         apodo_usuario: usuario.apodo_usuario,
         rol: usuario.rol,
         persona: {
-          id_persona: usuario.persona.id_persona,
+          id_persona: usuario.persona.id_persona.toString(),
           nombre_completo: `${usuario.persona.primer_nombre} ${usuario.persona.primer_apellido}`,
           primer_nombre: usuario.persona.primer_nombre,
           segundo_nombre: usuario.persona.segundo_nombre,

@@ -325,8 +325,10 @@ enum tipo_participante_externo_enum {
 }
 
 enum tipo_persona_enum {
-  estudiante
-  docente
+  estudiante_activo
+  estudiante_egresado
+  docente_tc
+  docente_tp
   administrativo
   externo
 
